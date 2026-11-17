@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es-AR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f2e9">
+  <meta name="description"
+    content="Pedí tus empanadas y pizzas favoritas en Punto Empanadas, Bell Ville. Combiná gustos, elegí retiro o envío y mandá tu pedido por WhatsApp.">
+  <title>Punto Empanadas · Tu pedido, al punto.</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js" defer></script>
+  <script src="order.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+
+<body>
+  <a class="skip" href="#menu">Ir al menú</a>
+  <header class="header wrap">
+    <a class="brand" href="#" aria-label="Punto Empanadas, inicio"><img src="assets/logo.png" width="54" height="54"
+        alt=""><span>PUNTO<span class="orange">.</span><small>EMPANADAS</small></span></a>
+    <nav aria-label="Navegación principal"><a href="#menu">El menú</a><a href="#local">El local</a><a class="nav-order"
+        href="#pedido">Mi pedido <span id="nav-count">0</span></a></nav>
+  </header>
+  <main>
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="tiny-dot"></span> BELL VILLE, CÓRDOBA</p>
+        <h1 id="hero-title">Tu antojo.<br>Nuestro <em>punto.</em></h1>
+        <p class="hero-text">Empanadas, pizzas y ese plan que nunca falla.<br>Elegí tus favoritos. Nosotros ponemos el
+          sabor.</p><a class="button dark" href="#menu">Armá tu pedido <span aria-hidden="true">↗</span></a>
+        <div class="hero-details"><span>Retiro en el local</span><i></i><span>Envíos a domicilio</span></div>
+      </div>
+      <div class="hero-art">
+        <div class="food-photo" role="img" aria-label="Una caja de empanadas de Punto Empanadas"></div><span
+          class="art-tag">EL PLAN ES COMPARTIR.</span>
+        <div class="price-sticker"><span>MEZCLÁ TUS FAVORITAS</span><strong>$25.000</strong><span>LA DOCENA · TODOS LOS
+            GUSTOS</span></div><span class="art-star" aria-hidden="true">✳</span>
+      </div>
+    </section>
+    <div class="info-strip">
+      <div class="wrap"><span><span class="tiny-dot"></span> Miércoles a domingos · 19 a 23 h</span><span>Córdoba 1390,
+          esquina Honduras</span><a href="https://www.instagram.com/punto.empanadasbv/" target="_blank"
+          rel="noopener noreferrer">@punto.empanadasbv ↗</a></div>
+    </div>
+    <div class="order-layout wrap">
+      <section id="menu" class="menu" aria-labelledby="menu-title">
+        <p class="eyebrow">A VER, ¿QUÉ SE TE ANTOJA?</p>
+        <div class="section-heading">
+          <h2 id="menu-title">Elegí tu punto.</h2><span class="menu-caption">Hecho para compartir.</span>
+        </div>
+        <section class="promo" aria-labelledby="promo-title">
+          <div class="promo-top"><span class="promo-icon" aria-hidden="true">✳</span>
+            <div>
+              <p class="eyebrow">JUNTOS ES MEJOR</p>
+              <h3 id="promo-title">Elegí tu promo. Completá las 12.</h3>
+            </div>
+          </div>
+          <p>Elegí una promo y combiná tus gustos. Podés pedir cuando sumes al menos 12 empanadas.</p>
+          <div id="promo-progress" class="promo-progress" role="status"></div>
+          <div class="progress-track">
+            <div id="progress-fill"></div>
+          </div>
+          <fieldset class="promo-options">
+            <legend class="sr-only">Precio de las empanadas</legend><label><input type="radio" name="promo"
+                value="units" checked><span>Por unidad<small>$2.100 c/u</small></span></label><label><input type="radio"
+                name="promo" value="dozen"><span>La docena<small>$25.000 · cualquier
+                  gusto</small></span></label><label><input type="radio" name="promo" value="combo"><span>Docena +
+                Pritty <b>EL COMBO</b><small>$28.000 · Pritty de 2,25 L</small></span></label>
+          </fieldset>
+          <p class="promo-foot">Cada 12 empanadas se cobra automáticamente una docena a $25.000, incluso si elegís por
+            unidad. Con Pritty, cada docena cuesta $28.000. Las sobrantes cuestan $2.100 cada una.</p>
+        </section>
+        <div class="tabs" role="tablist" aria-label="Categorías del menú"><button id="tab-empanadas" class="tab active"
+            role="tab" aria-selected="true" aria-controls="panel-empanadas" data-tab="empanadas">Empanadas <span>12
+              gustos</span></button><button id="tab-pizzas" class="tab" role="tab" aria-selected="false"
+            aria-controls="panel-pizzas" tabindex="-1" data-tab="pizzas">Pizzas <span>5 variedades</span></button></div>
+        <div id="panel-empanadas" role="tabpanel" aria-labelledby="tab-empanadas">
+          <div class="menu-intro">
+            <p>Todos los gustos, todas las combinaciones.</p><strong>$2.100 <span>/ unidad</span></strong>
+          </div>
+          <div id="empanada-list" class="product-grid"></div>
+
+        </div>
+        <div id="panel-pizzas" role="tabpanel" aria-labelledby="tab-pizzas" hidden>
+          <div class="menu-intro">
+            <p>Una pizza siempre es un buen plan.</p><span>Elegí la tuya ↓</span>
+          </div>
+          <div id="pizza-list" class="product-grid"></div>
+        </div>
+      </section>
+      <aside id="pedido" class="cart" aria-labelledby="cart-title">
+        <div class="cart-heading">
+          <h2 id="cart-title">Tu pedido<span class="orange">.</span></h2><span id="cart-count">0 productos</span>
+        </div>
+        <div class="cart-tools"><button type="button" id="clear-cart" class="text-button" disabled>Vaciar
+            pedido</button></div>
+        <div id="cart-items"></div>
+        <div id="cart-totals" hidden></div>
+        <form id="order-form">
+          <fieldset class="delivery-options">
+            <legend>¿Cómo lo recibís?</legend><label><input type="radio" name="delivery" value="pickup"
+                checked><span>Retiro en el local<small>Sin costo</small></span></label><label><input type="radio"
+                name="delivery" value="delivery"><span>Envío a domicilio<small>+ $3.000</small></span></label>
+          </fieldset><label class="field">Tu nombre <input name="customer" autocomplete="name" maxlength="80"
+              placeholder="¿A nombre de quién?" required></label><label class="field" id="address-field"
+            hidden>Dirección de entrega <input name="address" autocomplete="street-address" maxlength="180"
+              placeholder="Calle, número, piso o departamento"></label><label class="field">¿Con qué vas a
+            abonar?<select name="payment" required>
+              <option value="">Elegí un medio de pago</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="A coordinar por WhatsApp">Otro · coordinar por WhatsApp</option>
+            </select></label><label class="field">¿Algo que debamos saber? <span
+              class="optional">Opcional</span><textarea name="notes" maxlength="400" rows="2"
+              placeholder="Aclaraciones, cambio para efectivo…"></textarea></label>
+          <div id="form-error" class="form-error" role="alert" hidden></div>
+          <p id="promo-checkout-note" class="promo-checkout-note" role="status" hidden></p><button
+            class="button whatsapp" type="submit" id="submit-order" disabled><svg aria-hidden="true"
+              viewBox="0 0 24 24">
+              <path d="M20.5 11.7a8.5 8.5 0 0 1-12.7 7.4L3 20.5l1.4-4.6A8.5 8.5 0 1 1 20.5 11.7Z" />
+              <path d="M8.1 7.4c.5 3.8 2.8 6.3 6.8 7.4l1.4-2-2.4-1.1-.9 1c-1.5-.7-2.6-1.8-3.2-3.2l.8-.9-1-2.1Z" />
+            </svg> Pedir por WhatsApp <span aria-hidden="true">↗</span></button>
+          <p class="checkout-note">Se abrirá WhatsApp con el detalle y el total.<br>Enviá el mensaje para coordinar tu
+            pedido.</p>
+          <p id="send-status" class="send-status" role="status"></p>
+        </form>
+      </aside>
+    </div>
+    <section id="local" class="local wrap">
+      <div>
+        <p class="eyebrow">NOS ENCONTRAMOS ACÁ</p>
+        <h2>Tu punto de encuentro<span class="orange">.</span></h2>
+      </div>
+      <div>
+        <h3>Pasá por el local</h3>
+        <p>Córdoba 1390, esquina Honduras<br>Bell Ville, Córdoba</p><a
+          href="https://www.google.com/maps/search/?api=1&amp;query=C%C3%B3rdoba%201390%2C%20Bell%20Ville%2C%20C%C3%B3rdoba"
+          target="_blank" rel="noopener noreferrer">Cómo llegar ↗</a>
+      </div>
+      <div>
+        <h3>Te esperamos</h3>
+        <p>Miércoles a domingos<br>19:00 a 23:00 h</p><a href="tel:+543537607178">3537 607178 ↗</a>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap"><a class="footer-brand" href="#">PUNTO<span class="orange">.</span></a>
+    <p>Gracias por elegir Punto Empanadas.</p><a href="https://www.instagram.com/punto.empanadasbv/" target="_blank"
+      rel="noopener noreferrer">Instagram ↗</a><button id="privacy-open" class="text-button">Privacidad</button>
+  </footer>
+  <a href="#pedido" class="mobile-cart" id="mobile-cart" hidden><span>Ver mi pedido <b
+        id="mobile-count">0</b></span><strong id="mobile-total">$0</strong><span aria-hidden="true">↗</span></a>
+  <dialog id="privacy-dialog"><button class="dialog-close" id="privacy-close" aria-label="Cerrar">×</button>
+    <p class="eyebrow">TUS DATOS</p>
+    <h2>Privacidad</h2>
+    <p>Tu nombre, dirección y notas se usan para armar el mensaje que vos enviás por WhatsApp. No se guardan en este
+      sitio ni se envían a Google Analytics.</p>
+    <p>Si aceptás las estadísticas, Google Analytics registra visitas y pedidos derivados a WhatsApp, con su importe y
+      los productos, sin los datos personales del formulario. Una derivación no confirma que el mensaje se haya enviado
+      ni que la venta se haya concretado.</p><button id="revoke-analytics" class="button dark">Desactivar
+      estadísticas</button>
+    <p id="privacy-status" role="status"></p>
+  </dialog>
+  <div id="cookie-banner" class="cookie-banner" hidden>
+    <p>¿Nos ayudás a mejorar? Usamos Google Analytics para medir visitas y pedidos derivados, sin los datos personales
+      de tu pedido.</p>
+    <div><button id="accept-analytics">Aceptar estadísticas</button><button id="reject-analytics">Ahora no</button>
+    </div>
+  </div>
+  <noscript>
+    <p class="noscript">Activá JavaScript para armar tu pedido, o llamanos al <a href="tel:+543537607178">3537
+        607178</a>.</p>
+  </noscript>
+  <a href="https://wa.me/5493537607178" class="floating-whatsapp" target="_blank" rel="noopener noreferrer"
+    aria-label="Contactar por WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20.5 11.7a8.5 8.5 0 0 1-12.7 7.4L3 20.5l1.4-4.6A8.5 8.5 0 1 1 20.5 11.7Z" />
+      <path d="M8.1 7.4c.5 3.8 2.8 6.3 6.8 7.4l1.4-2-2.4-1.1-.9 1c-1.5-.7-2.6-1.8-3.2-3.2l.8-.9-1-2.1Z" />
+    </svg>
+  </a>
+</body>
+
+</html>
