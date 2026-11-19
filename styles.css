@@ -839,21 +839,20 @@ h2 {
     background: var(--green);
     color: #fff;
     width: 100%;
-    padding: 14px 10px;
+    padding: 14px;
     font-size: 12px;
     gap: 10px
 }
 
-.whatsapp>span {
-    margin-left: auto
+.icon-definitions {
+    position: absolute
 }
 
-.whatsapp svg {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.5
+.whatsapp-icon {
+    width: 24px;
+    height: 24px;
+    flex: none;
+    fill: currentColor
 }
 
 .checkout-note {
@@ -1048,47 +1047,9 @@ dialog p {
     background: #f9dbbc
 }
 
-/* Botón flotante de WhatsApp para celulares */
-.floating-whatsapp {
+/* Acceso al pedido para celulares */
+.mobile-order-dock {
     display: none;
-}
-
-@media (max-width: 768px) {
-    .floating-whatsapp {
-        position: fixed;
-        right: 18px;
-        bottom: 10px;
-        z-index: 999;
-
-        width: 58px;
-        height: 58px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        background: #25D366;
-        border-radius: 50%;
-
-        box-shadow: 0 4px 15px rgba(0, 0, 0, .22);
-
-        transition: transform .2s ease;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    .floating-whatsapp:active {
-        transform: scale(.92);
-    }
-
-    .floating-whatsapp svg {
-        width: 31px;
-        height: 31px;
-        fill: none;
-        stroke: white;
-        stroke-width: 1.6;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
 }
 
 @media(min-width:1440px) {
@@ -1104,6 +1065,10 @@ dialog p {
 @media(max-width:1100px) {
     .wrap {
         width: calc(100% - 48px)
+    }
+
+    .art-star {
+        right: -12px
     }
 
     .hero {
@@ -1181,21 +1146,32 @@ dialog p {
         display: none
     }
 
-    .mobile-cart:not([hidden]) {
+    .mobile-order-dock {
         display: flex;
+        flex-direction: column;
+        gap: 10px;
         position: fixed;
         bottom: max(14px, env(safe-area-inset-bottom));
         left: 20px;
         right: 20px;
+        z-index: 10;
+        pointer-events: none
+    }
+
+    .mobile-order-dock > a { pointer-events: auto }
+
+    .mobile-cart:not([hidden]) {
+        display: flex;
         background: var(--ink);
         color: white;
         border-radius: 8px;
         padding: 17px 20px;
         align-items: center;
         gap: 18px;
-        z-index: 10;
         box-shadow: 0 5px 20px #0003
     }
+
+    #mobile-total { white-space: nowrap }
 
     .mobile-cart>span:first-child {
         margin-right: auto
@@ -1609,4 +1585,166 @@ dialog p {
     text-underline-offset: 3px;
     padding: 4px 0;
     color: var(--muted)
+}
+
+.product .ingredient-copy {
+    font-size: 11px;
+    line-height: 1.55;
+    min-height: 0
+}
+
+.order-layout:has(.cart[hidden]) { grid-template-columns: 1fr }
+#menu-title::after {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 3px;
+    margin-top: .6rem;
+    border-radius: 2px;
+    background: var(--orange);
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.category-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .35rem;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 3.25;
+    min-height: 9rem;
+    padding: 1rem;
+    border: 1px solid #4e2d1c;
+    border-radius: 14px;
+    background: #352318;
+    box-shadow: 0 3px 10px #3523181f;
+    color: #fffaf3;
+    text-align: center;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    z-index: -2;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    aspect-ratio: 3 / 2;
+    background: url('assets/categorias.jpg') var(--photo-x, 0%) var(--photo-y, 0%) / 200% 200% no-repeat;
+    transform: translateY(-50%);
+    transition: transform .2s ease;
+}
+
+.category-card::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(145deg, #1c110a70, #1c110ac9);
+}
+
+.category-card[data-category="pizzas"], .category-card[data-category="promociones"] { --photo-x: 100% }
+.category-card[data-category="bebidas"], .category-card[data-category="promociones"] { --photo-y: 100% }
+.category-card:hover, .category-card:focus-visible { border-color: var(--orange) }
+.category-card strong { font-family: 'Manrope', sans-serif; font-size: clamp(1rem, 2.4vw, 1.75rem); font-weight: 800; text-transform: uppercase; overflow-wrap: anywhere }
+.category-card small { font-size: .875rem; color: #fffaf3 }
+.category-back {
+    position: sticky;
+    top: max(12px, env(safe-area-inset-top));
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 0 0 16px;
+    padding: .55rem .9rem;
+    border: 1px solid #ce956b;
+    border-radius: 9px;
+    background: #fff5e9;
+    color: var(--ink);
+    font-size: .9375rem;
+    font-weight: 700;
+    box-shadow: 0 2px 6px #35231820;
+}
+
+.category-back:hover { background: #ffe5cb; border-color: var(--orange) }
+.category-title { margin: 0 0 18px }
+.category-empty { display: grid; place-items: center; gap: 5px; min-height: 210px; border: 1px dashed var(--line); border-radius: 8px; text-align: center; color: var(--muted) }
+.category-empty span { font-size: 36px }
+.category-empty p { font-size: 13px; padding: 0 16px }
+#panel-promociones .promo { margin-top: 0 }
+.promo-next { margin-top: 18px }
+@media (max-width: 560px) {
+    .category-grid { gap: 10px }
+    .category-card { aspect-ratio: 1.65; min-height: 6rem; padding: .55rem; border-radius: 10px }
+}
+
+.menu-intro, .product-bottom > span, .cheese-variant > span,
+.promo-options small, .cart-heading > span, .empty-cart p, .cart-row small,
+.delivery-options small, .checkout-note, .optional, footer, footer p {
+    font-size: .8125rem;
+}
+
+.info-strip > .wrap, .info-strip a, .hero-details, .menu-caption,
+.product p, .product .ingredient-copy, .promo .promo-foot,
+.cart-tools .text-button, .promo-checkout-note {
+    font-size: .8125rem;
+}
+
+nav, .nav-order, .promo > p, .promo-progress, .total-line,
+.delivery-options label, .field, .delivery-options legend, .local p, .local a {
+    font-size: .875rem;
+}
+
+body, .hero-text, .menu-intro strong, .empty-cart h3, .cart-row strong,
+.promo-options span, .field input, .field select, .field textarea,
+.whatsapp, .mobile-cart, .local h3 {
+    font-size: 1rem;
+}
+
+.product h3 {
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    overflow-wrap: anywhere;
+}
+
+.stepper output, .cart-row .stepper output { font-size: .875rem }
+.grand-total { font-size: 1rem }
+.grand-total strong { font-size: 1.625rem }
+#nav-count, #mobile-count { display: inline-block }
+
+@media (max-width: 560px) {
+    .category-card strong { font-size: clamp(.875rem, 3.8vw, 1.1rem) }
+    .nav-order, .category-card small { font-size: .8125rem }
+    .info-strip > .wrap, .info-strip a { font-size: .75rem }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .category-card, .button, .nav-order, .stepper button {
+        transition: transform .18s ease-out, border-color .18s ease-out, box-shadow .18s ease-out, background-color .18s ease-out;
+    }
+
+    .promo-options label, .delivery-options label, .field input, .field select, .field textarea {
+        transition: border-color .18s ease-out, background-color .18s ease-out;
+    }
+
+    .category-card:active, .button:active:not(:disabled), .stepper button:active:not(:disabled) {
+        transform: scale(.97);
+    }
+
+    @media (hover: hover) {
+        .category-card:hover { transform: translateY(-2px); box-shadow: 0 6px 14px #35231830 }
+        .category-card:hover::before { transform: translateY(-50%) scale(1.05) }
+        .button:hover:not(:disabled), .nav-order:hover { transform: translateY(-2px) }
+        .stepper button:hover:not(:disabled) { border-color: var(--orange) }
+    }
 }

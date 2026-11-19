@@ -3,16 +3,45 @@
   const config=window.PUNTO_CONFIG, {products,money,calculate,message}=window.PuntoOrder;
   const $=selector=>document.querySelector(selector), $$=selector=>[...document.querySelectorAll(selector)];
   const cart={}, form=$('#order-form');
-  let promo='units', delivery='pickup', sending=false, lastSubmission=null;
+  let promo='units', delivery='pickup', sending=false, lastSubmission=null, selectedCategory=null;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const interactionAnimations = new WeakMap();
+
+  function animateInteraction(element, frames, duration) {
+    if (reducedMotion.matches || !element?.animate) return;
+    interactionAnimations.get(element)?.cancel();
+    interactionAnimations.set(element, element.animate(frames, {
+      duration,
+      easing: 'cubic-bezier(.2,.75,.25,1)'
+    }));
+  }
+
+  function animateReveal(element) {
+    animateInteraction(element, [
+      { opacity: .72, transform: 'translateY(8px)' },
+      { opacity: 1, transform: 'translateY(0)' }
+    ], 220);
+  }
+
+  function emphasizeCount(element) {
+    animateInteraction(element, [
+      { scale: 1 },
+      { scale: 1.15, offset: .4 },
+      { scale: 1 }
+    ], 210);
+  }
   const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const storage={get(key){try{return localStorage.getItem(key);}catch{return null;}},set(key,value){try{localStorage.setItem(key,value);}catch{/* Navigation and ordering work without storage. */}}};
   const variantsFor = p=>p.cheese ? [false,true].map(withCheese=>({...p,withCheese,cartKey:`${p.id}-${withCheese?'con':'sin'}-queso`})) : [{...p,cartKey:p.id}];
   function stepper(p,quantity,where){const key=p.cartKey||p.id,label=escape(p.name)+(p.cheese?(p.withCheese?' con queso':' sin queso'):'');return `<div class="stepper"><button type="button" data-product="${key}" data-change="-1" aria-label="Quitar una ${label}${where}" ${quantity?'':'disabled'}>−</button><output aria-label="Cantidad de ${label}">${quantity}</output><button type="button" class="plus" data-product="${key}" data-change="1" aria-label="Agregar una ${label}${where}" ${quantity>=120?'disabled':''}>+</button></div>`;}
-  products.forEach((p,index)=>{
+  const menuOrder = [...products].sort((a,b)=>a.name.localeCompare(b.name,'es-AR',{numeric:true}));
+  let empanadaNumber = 0;
+  menuOrder.forEach(p=>{
     const variants=variantsFor(p);
     variants.forEach(variant=>{cart[variant.cartKey]={quantity:0};});
     const article=document.createElement('article');article.className=`product ${p.category}`;article.id=`product-${p.id}`;
-    article.innerHTML=`<div class="product-title"><span class="product-mark" aria-hidden="true">${p.category==='pizza'?'P':String(index+1).padStart(2,'0')}</span><h3>${p.name}</h3></div><p>${p.description||'Pizza entera · para compartir'}</p>${p.cheese?`<div class="cheese-variants" role="group" aria-label="Elegí las cantidades de ${p.name}">${variants.map(variant=>`<div class="cheese-variant"><span>${variant.withCheese?'Con queso':'Sin queso'}</span>${stepper(variant,0,'')}</div>`).join('')}</div>`:`<div class="product-bottom"><span>${money(p.price||config.unitPrice)}</span>${stepper(p,0,'')}</div>`}`;
+    const mark = p.category==='pizza' ? 'P' : String(++empanadaNumber).padStart(2,'0');
+    article.innerHTML=`<div class="product-title"><span class="product-mark" aria-hidden="true">${mark}</span><h3>${p.name}</h3></div><p class="${p.ingredients?'ingredient-copy':''}">${escape(p.ingredients||p.description||'Pizza entera · para compartir')}</p>${p.cheese?`<div class="cheese-variants" role="group" aria-label="Elegí las cantidades de ${p.name}">${variants.map(variant=>`<div class="cheese-variant"><span>${variant.withCheese?'Con queso':'Sin queso'}</span>${stepper(variant,0,'')}</div>`).join('')}</div>`:`<div class="product-bottom"><span>${money(p.price||config.unitPrice)}</span>${stepper(p,0,'')}</div>`}`;
     $(p.category==='empanada'?'#empanada-list':'#pizza-list').append(article);
   });
   function order(){return calculate(cart,promo,delivery,config);}
@@ -32,13 +61,56 @@
     $('#promo-checkout-note').hidden=!current.promoIncomplete;
     $('#promo-checkout-note').textContent=current.promoIncomplete?`Elegiste ${promo==='combo'?'docena + Pritty':'la docena'}. Sumá ${12-current.empanadas} ${current.empanadas===11?'empanada más':'empanadas más'} para poder pedir. El precio de la promo se aplica al completar las 12.`:'';
     $('#address-field').hidden=delivery!=='delivery';form.elements.address.required=delivery==='delivery';form.elements.address.disabled=delivery!=='delivery';
+    $('#pedido').hidden=!selectedCategory&&!current.items.length;
     $('#mobile-cart').hidden=!current.items.length;$('#mobile-count').textContent=current.quantity;$('#mobile-total').textContent=money(current.total);
   }
-  document.addEventListener('click',event=>{const button=event.target.closest('[data-change]');if(!button)return;const id=button.dataset.product,change=button.dataset.change,inCart=Boolean(button.closest('#cart-items'));cart[id].quantity=Math.min(120,Math.max(0,cart[id].quantity+Number(change)));$('#send-status').textContent='';render();if(inCart){const replacement=$(`#cart-items [data-product="${id}"][data-change="${change}"]`);if(replacement&&!replacement.disabled)replacement.focus({preventScroll:true});}});
-  $('#clear-cart').addEventListener('click',()=>{Object.values(cart).forEach(item=>{item.quantity=0;});lastSubmission=null;$('#form-error').hidden=true;$('#form-error').textContent='';$('#send-status').textContent='Se quitaron todos los productos del pedido.';render();});
+  document.addEventListener('click', event => {
+    const button = event.target.closest('[data-change]');
+    if (!button) return;
+    const id = button.dataset.product;
+    const change = button.dataset.change;
+    const inCart = Boolean(button.closest('#cart-items'));
+    cart[id].quantity = Math.min(120, Math.max(0, cart[id].quantity + Number(change)));
+    $('#send-status').textContent = '';
+    render();
+    const updatedButton = inCart
+      ? $(`#cart-items [data-product="${id}"][data-change="${change}"]`)
+      : button;
+    emphasizeCount(updatedButton?.closest('.stepper')?.querySelector('output'));
+    emphasizeCount($('#nav-count'));
+    emphasizeCount($('#mobile-count'));
+    if (inCart && updatedButton && !updatedButton.disabled) updatedButton.focus({preventScroll:true});
+  });
+  $('#clear-cart').addEventListener('click', () => {
+    Object.values(cart).forEach(item => { item.quantity = 0; });
+    lastSubmission = null;
+    $('#form-error').hidden = true;
+    $('#form-error').textContent = '';
+    $('#send-status').textContent = 'Se quitaron todos los productos del pedido.';
+    render();
+    animateReveal($('#cart-items .empty-cart'));
+  });
   document.addEventListener('change',event=>{const input=event.target;if(input.name==='promo'){promo=input.value;render();}if(input.name==='delivery'){delivery=input.value;render();}});
-  function activateTab(tab,focus=false){$$('[role="tab"]').forEach(button=>{const active=button===tab;button.classList.toggle('active',active);button.setAttribute('aria-selected',active);button.tabIndex=active?0:-1;$(`#${button.getAttribute('aria-controls')}`).hidden=!active;});if(focus)tab.focus();}
-  $$('[role="tab"]').forEach((tab,index)=>{tab.addEventListener('click',()=>activateTab(tab));tab.addEventListener('keydown',event=>{if(['ArrowRight','ArrowLeft','Home','End'].includes(event.key)){event.preventDefault();const tabs=$$('[role="tab"]');activateTab(tabs[event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+1)%tabs.length],true);}});});
+  const categoryNames={empanadas:'Empanadas',pizzas:'Pizzas',bebidas:'Bebidas',promociones:'Promociones'};
+  function openCategory(category){
+    if(!categoryNames[category])return;
+    selectedCategory=category;
+    $('#category-home').hidden=true;$('#category-view').hidden=false;
+    $('#category-title').textContent=categoryNames[category];
+    $$('.category-panel').forEach(panel=>{panel.hidden=panel.id!==`panel-${category}`;});
+    render();
+    $('#category-title').focus({preventScroll:true});
+    $('#menu').scrollIntoView({block:'start'});
+    animateReveal($('#category-view'));
+  }
+  $$('[data-category]').forEach(button=>button.addEventListener('click',()=>openCategory(button.dataset.category)));
+  $('#category-back').addEventListener('click',()=>{
+    selectedCategory=null;$('#category-view').hidden=true;$('#category-home').hidden=false;
+    render();$('#menu-title').setAttribute('tabindex','-1');$('#menu-title').focus({preventScroll:true});$('#menu').scrollIntoView({block:'start'});
+    animateReveal($('#category-home'));
+  });
+  $('#promo-to-empanadas').addEventListener('click',()=>openCategory('empanadas'));
+  $('.nav-order').addEventListener('click',()=>{if($('#pedido').hidden)openCategory('empanadas');});
   // No nombres, direcciones, notas, URLs de WhatsApp ni medios de pago en Analytics.
   let analyticsReady=false,consent=storage.get('punto-analytics-consent');
   const validMeasurementId=/^G-[A-Z0-9]+$/.test(config.gaMeasurementId);

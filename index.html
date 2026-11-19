@@ -9,13 +9,18 @@
     content="Pedí tus empanadas y pizzas favoritas en Punto Empanadas, Bell Ville. Combiná gustos, elegí retiro o envío y mandá tu pedido por WhatsApp.">
   <title>Punto Empanadas · Tu pedido, al punto.</title>
   <link rel="icon" href="assets/logo.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=whatsapp">
   <script src="config.js" defer></script>
   <script src="order.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=interacciones" defer></script>
 </head>
 
 <body>
+  <svg class="icon-definitions" width="0" height="0" aria-hidden="true" focusable="false">
+    <symbol id="whatsapp-mark" viewBox="0 0 24 24">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.967-.94 1.165-.174.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.693.626.712.226 1.36.194 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.266c.002-5.45 4.436-9.883 9.888-9.883a9.82 9.82 0 0 1 6.988 2.899 9.82 9.82 0 0 1 2.893 6.992c-.002 5.45-4.436 9.884-9.885 9.884M20.461 3.488A11.82 11.82 0 0 0 12.05 0C5.495 0 .16 5.335.158 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.892-11.892a11.82 11.82 0 0 0-3.481-8.414Z" />
+    </symbol>
+  </svg>
   <a class="skip" href="#menu">Ir al menú</a>
   <header class="header wrap">
     <a class="brand" href="#" aria-label="Punto Empanadas, inicio"><img src="assets/logo.png" width="54" height="54"
@@ -45,52 +50,51 @@
           rel="noopener noreferrer">@punto.empanadasbv ↗</a></div>
     </div>
     <div class="order-layout wrap">
-      <section id="menu" class="menu" aria-labelledby="menu-title">
+      <section id="menu" class="menu" aria-label="Menú">
         <p class="eyebrow">A VER, ¿QUÉ SE TE ANTOJA?</p>
-        <div class="section-heading">
-          <h2 id="menu-title">Elegí tu punto.</h2><span class="menu-caption">Hecho para compartir.</span>
+        <div id="category-home">
+          <div class="section-heading"><h2 id="menu-title">Categorías.</h2><span class="menu-caption">Elegí por dónde empezar.</span></div>
+          <div class="category-grid" aria-label="Categorías del menú">
+            <button type="button" class="category-card" data-category="empanadas"><strong>Empanadas</strong><small>Todos los gustos</small></button>
+            <button type="button" class="category-card" data-category="pizzas"><strong>Pizzas</strong><small>Para compartir</small></button>
+            <button type="button" class="category-card" data-category="bebidas"><strong>Bebidas</strong><small>Próximamente</small></button>
+            <button type="button" class="category-card" data-category="promociones"><strong>Promociones</strong><small>Combos y docenas</small></button>
+          </div>
         </div>
-        <section class="promo" aria-labelledby="promo-title">
-          <div class="promo-top"><span class="promo-icon" aria-hidden="true">✳</span>
-            <div>
-              <p class="eyebrow">JUNTOS ES MEJOR</p>
-              <h3 id="promo-title">Elegí tu promo. Completá las 12.</h3>
-            </div>
-          </div>
-          <p>Elegí una promo y combiná tus gustos. Podés pedir cuando sumes al menos 12 empanadas.</p>
-          <div id="promo-progress" class="promo-progress" role="status"></div>
-          <div class="progress-track">
-            <div id="progress-fill"></div>
-          </div>
-          <fieldset class="promo-options">
-            <legend class="sr-only">Precio de las empanadas</legend><label><input type="radio" name="promo"
-                value="units" checked><span>Por unidad<small>$2.100 c/u</small></span></label><label><input type="radio"
-                name="promo" value="dozen"><span>La docena<small>$25.000 · cualquier
-                  gusto</small></span></label><label><input type="radio" name="promo" value="combo"><span>Docena +
-                Pritty <b>EL COMBO</b><small>$28.000 · Pritty de 2,25 L</small></span></label>
-          </fieldset>
-          <p class="promo-foot">Cada 12 empanadas se cobra automáticamente una docena a $25.000, incluso si elegís por
-            unidad. Con Pritty, cada docena cuesta $28.000. Las sobrantes cuestan $2.100 cada una.</p>
-        </section>
-        <div class="tabs" role="tablist" aria-label="Categorías del menú"><button id="tab-empanadas" class="tab active"
-            role="tab" aria-selected="true" aria-controls="panel-empanadas" data-tab="empanadas">Empanadas <span>12
-              gustos</span></button><button id="tab-pizzas" class="tab" role="tab" aria-selected="false"
-            aria-controls="panel-pizzas" tabindex="-1" data-tab="pizzas">Pizzas <span>5 variedades</span></button></div>
-        <div id="panel-empanadas" role="tabpanel" aria-labelledby="tab-empanadas">
+        <div id="category-view" hidden>
+          <button type="button" id="category-back" class="category-back">← Todas las categorías</button>
+          <h2 id="category-title" class="category-title" tabindex="-1">Empanadas</h2>
+        <div id="panel-empanadas" class="category-panel">
           <div class="menu-intro">
-            <p>Todos los gustos, todas las combinaciones.</p><strong>$2.100 <span>/ unidad</span></strong>
+            <p>Todos los gustos, todas las combinaciones.</p><strong>$2.500 <span>/ unidad</span></strong>
           </div>
           <div id="empanada-list" class="product-grid"></div>
 
         </div>
-        <div id="panel-pizzas" role="tabpanel" aria-labelledby="tab-pizzas" hidden>
+        <div id="panel-pizzas" class="category-panel" hidden>
           <div class="menu-intro">
             <p>Una pizza siempre es un buen plan.</p><span>Elegí la tuya ↓</span>
           </div>
           <div id="pizza-list" class="product-grid"></div>
         </div>
+        <div id="panel-bebidas" class="category-panel" hidden><div class="category-empty"><span aria-hidden="true">🥤</span><p>Por ahora no hay bebidas para pedir por separado.</p></div></div>
+        <div id="panel-promociones" class="category-panel" hidden>
+          <section class="promo" aria-labelledby="promo-title">
+            <div class="promo-top"><span class="promo-icon" aria-hidden="true">✳</span><div><p class="eyebrow">JUNTOS ES MEJOR</p><h3 id="promo-title">Elegí tu promo. Completá las 12.</h3></div></div>
+            <p>Elegí una promo y combiná tus gustos. Podés pedir cuando sumes al menos 12 empanadas.</p>
+            <div id="promo-progress" class="promo-progress" role="status"></div><div class="progress-track"><div id="progress-fill"></div></div>
+            <fieldset class="promo-options"><legend class="sr-only">Precio de las empanadas</legend>
+              <label><input type="radio" name="promo" value="units" checked><span>Por unidad<small>$2.500 c/u</small></span></label>
+              <label><input type="radio" name="promo" value="dozen"><span>La docena<small>$25.000 · cualquier gusto</small></span></label>
+              <label><input type="radio" name="promo" value="combo"><span>Docena + Pritty <b>EL COMBO</b><small>$28.000 · Pritty de 2,25 L</small></span></label>
+            </fieldset>
+            <p class="promo-foot">Cada 12 empanadas se cobra automáticamente una docena a $25.000, incluso si elegís por unidad. Con Pritty, cada docena cuesta $28.000. Las sobrantes cuestan $2.500 cada una.</p>
+          </section>
+          <button type="button" id="promo-to-empanadas" class="button dark promo-next">Elegir empanadas <span aria-hidden="true">↗</span></button>
+        </div>
+        </div>
       </section>
-      <aside id="pedido" class="cart" aria-labelledby="cart-title">
+      <aside id="pedido" class="cart" aria-labelledby="cart-title" hidden>
         <div class="cart-heading">
           <h2 id="cart-title">Tu pedido<span class="orange">.</span></h2><span id="cart-count">0 productos</span>
         </div>
@@ -116,12 +120,11 @@
               class="optional">Opcional</span><textarea name="notes" maxlength="400" rows="2"
               placeholder="Aclaraciones, cambio para efectivo…"></textarea></label>
           <div id="form-error" class="form-error" role="alert" hidden></div>
-          <p id="promo-checkout-note" class="promo-checkout-note" role="status" hidden></p><button
-            class="button whatsapp" type="submit" id="submit-order" disabled><svg aria-hidden="true"
-              viewBox="0 0 24 24">
-              <path d="M20.5 11.7a8.5 8.5 0 0 1-12.7 7.4L3 20.5l1.4-4.6A8.5 8.5 0 1 1 20.5 11.7Z" />
-              <path d="M8.1 7.4c.5 3.8 2.8 6.3 6.8 7.4l1.4-2-2.4-1.1-.9 1c-1.5-.7-2.6-1.8-3.2-3.2l.8-.9-1-2.1Z" />
-            </svg> Pedir por WhatsApp <span aria-hidden="true">↗</span></button>
+          <p id="promo-checkout-note" class="promo-checkout-note" role="status" hidden></p>
+          <button class="button whatsapp" type="submit" id="submit-order" disabled>
+            <svg class="whatsapp-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#whatsapp-mark" /></svg>
+            Pedir por WhatsApp
+          </button>
           <p class="checkout-note">Se abrirá WhatsApp con el detalle y el total.<br>Enviá el mensaje para coordinar tu
             pedido.</p>
           <p id="send-status" class="send-status" role="status"></p>
@@ -149,8 +152,10 @@
     <p>Gracias por elegir Punto Empanadas.</p><a href="https://www.instagram.com/punto.empanadasbv/" target="_blank"
       rel="noopener noreferrer">Instagram ↗</a><button id="privacy-open" class="text-button">Privacidad</button>
   </footer>
-  <a href="#pedido" class="mobile-cart" id="mobile-cart" hidden><span>Ver mi pedido <b
-        id="mobile-count">0</b></span><strong id="mobile-total">$0</strong><span aria-hidden="true">↗</span></a>
+  <div class="mobile-order-dock">
+    <a href="#pedido" class="mobile-cart" id="mobile-cart" hidden><span>Ver mi pedido <b
+          id="mobile-count">0</b></span><strong id="mobile-total">$0</strong><span aria-hidden="true">↗</span></a>
+  </div>
   <dialog id="privacy-dialog"><button class="dialog-close" id="privacy-close" aria-label="Cerrar">×</button>
     <p class="eyebrow">TUS DATOS</p>
     <h2>Privacidad</h2>
@@ -172,13 +177,6 @@
     <p class="noscript">Activá JavaScript para armar tu pedido, o llamanos al <a href="tel:+543537607178">3537
         607178</a>.</p>
   </noscript>
-  <a href="https://wa.me/5493537607178" class="floating-whatsapp" target="_blank" rel="noopener noreferrer"
-    aria-label="Contactar por WhatsApp">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M20.5 11.7a8.5 8.5 0 0 1-12.7 7.4L3 20.5l1.4-4.6A8.5 8.5 0 1 1 20.5 11.7Z" />
-      <path d="M8.1 7.4c.5 3.8 2.8 6.3 6.8 7.4l1.4-2-2.4-1.1-.9 1c-1.5-.7-2.6-1.8-3.2-3.2l.8-.9-1-2.1Z" />
-    </svg>
-  </a>
 </body>
 
 </html>
