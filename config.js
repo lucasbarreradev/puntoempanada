@@ -3,6 +3,7 @@ window.PUNTO_CONFIG = Object.freeze({
   gaMeasurementId: '',
   whatsapp: '5493537607178',
   unitPrice: 2500,
+  halfComboPrice: 15000,
   dozenPrice: 25000,
   comboPrice: 28000,
   deliveryPrice: 3000

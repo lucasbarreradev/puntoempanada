@@ -39,27 +39,30 @@
   menuOrder.forEach(p=>{
     const variants=variantsFor(p);
     variants.forEach(variant=>{cart[variant.cartKey]={quantity:0};});
-    const article=document.createElement('article');article.className=`product ${p.category}`;article.id=`product-${p.id}`;
-    const mark = p.category==='pizza' ? 'P' : String(++empanadaNumber).padStart(2,'0');
-    article.innerHTML=`<div class="product-title"><span class="product-mark" aria-hidden="true">${mark}</span><h3>${p.name}</h3></div><p class="${p.ingredients?'ingredient-copy':''}">${escape(p.ingredients||p.description||'Pizza entera · para compartir')}</p>${p.cheese?`<div class="cheese-variants" role="group" aria-label="Elegí las cantidades de ${p.name}">${variants.map(variant=>`<div class="cheese-variant"><span>${variant.withCheese?'Con queso':'Sin queso'}</span>${stepper(variant,0,'')}</div>`).join('')}</div>`:`<div class="product-bottom"><span>${money(p.price||config.unitPrice)}</span>${stepper(p,0,'')}</div>`}`;
-    $(p.category==='empanada'?'#empanada-list':'#pizza-list').append(article);
+    const article=document.createElement('article');article.className=`product ${p.category}${p.image?' has-image':''}`;article.id=`product-${p.id}`;
+    const mark = p.category==='pizza' ? 'P' : p.category==='bebida' ? 'B' : p.category==='promotion' ? '★' : String(++empanadaNumber).padStart(2,'0');
+    article.innerHTML=`${p.image?`<div class="product-media"><img src="${escape(p.image)}?v=normalizadas-2" alt="${escape(p.name)}" loading="lazy" decoding="async"></div>`:''}<div class="product-title"><span class="product-mark" aria-hidden="true">${mark}</span><h3>${p.name}</h3></div><p class="${p.ingredients?'ingredient-copy':''}">${escape(p.ingredients||p.description||'Producto para compartir')}</p>${p.cheese?`<div class="cheese-variants" role="group" aria-label="Elegí las cantidades de ${p.name}">${variants.map(variant=>`<div class="cheese-variant"><span>${variant.withCheese?'Con queso':'Sin queso'}</span>${stepper(variant,0,'')}</div>`).join('')}</div>`:`<div class="product-bottom"><span>${money(p.price||config.unitPrice)}</span>${stepper(p,0,'')}</div>`}`;
+    const listSelector={empanada:'#empanada-list',pizza:'#pizza-list',bebida:'#beverage-list',promotion:'#promotion-list'}[p.category];
+    const list=$(listSelector);
+    if(list) list.append(article);
   });
   function order(){return calculate(cart,promo,delivery,config);}
   function render(){
     const current=order();
-    products.forEach(p=>{const item=$(`#product-${p.id}`),variants=variantsFor(p);item.classList.toggle('selected',variants.some(variant=>cart[variant.cartKey].quantity>0));variants.forEach(variant=>{const quantity=cart[variant.cartKey].quantity,minus=item.querySelector(`[data-product="${variant.cartKey}"][data-change="-1"]`),plus=item.querySelector(`[data-product="${variant.cartKey}"][data-change="1"]`);minus.closest('.stepper').querySelector('output').value=quantity;minus.disabled=!quantity;plus.disabled=quantity>=120;});});
+    products.forEach(p=>{const item=$(`#product-${p.id}`),variants=variantsFor(p);if(!item)return;item.classList.toggle('selected',variants.some(variant=>cart[variant.cartKey].quantity>0));variants.forEach(variant=>{const quantity=cart[variant.cartKey].quantity,minus=item.querySelector(`[data-product="${variant.cartKey}"][data-change="-1"]`),plus=item.querySelector(`[data-product="${variant.cartKey}"][data-change="1"]`);if(!minus||!plus)return;minus.closest('.stepper').querySelector('output').value=quantity;minus.disabled=!quantity;plus.disabled=quantity>=120;});});
     $$('[name="promo"]').forEach(input=>{input.checked=input.value===promo;});
-    $('#promo-progress').textContent=current.empanadas<12?`${current.empanadas} de 12 empanadas · ${current.empanadas===11?'falta 1':'faltan '+(12-current.empanadas)} para completar una docena`:`${current.empanadas} empanadas · ${current.dozens} ${current.dozens===1?'docena aplicada':'docenas aplicadas'}${current.mode==='combo'?' con Pritty':' a $25.000'}`;
-    $('#progress-fill').style.width=`${Math.min(100,current.empanadas/12*100)}%`;
+    const target=current.promoTarget, missing=Math.max(0,target-current.empanadas), completed=current.mode==='half'?current.halfDozens:current.dozens;
+    $('#promo-progress').textContent=current.empanadas<target?`${current.empanadas} de ${target} empanadas · ${missing===1?'falta 1':'faltan '+missing} para completar ${target===6?'la media docena':'una docena'}`:`${current.empanadas} empanadas · ${completed} ${target===6?(completed===1?'media docena aplicada':'medias docenas aplicadas'):(completed===1?'docena aplicada':'docenas aplicadas')}${current.mode==='combo'?' con Pritty':current.mode==='half'?' con Coca-Cola 600 ml':' a $25.000'}`;
+    $('#progress-fill').style.width=`${Math.min(100,current.empanadas/target*100)}%`;
     $('#nav-count').textContent=current.quantity;$('#cart-count').textContent=`${current.quantity} ${current.quantity===1?'producto':'productos'}`;
-    $('#cart-items').innerHTML=current.items.length?current.items.map(p=>`<div class="cart-row"><div><strong>${escape(p.name)}${p.category==='pizza'?' · pizza':''}</strong><small>${p.cheese?(p.withCheese?'Con queso':'Sin queso'):p.category==='empanada'?'Empanada':money(p.price)+' cada una'}</small></div>${stepper(p,p.quantity,' en tu pedido')}</div>`).join(''):'<div class="empty-cart"><div class="empty-icon" aria-hidden="true">＋</div><h3>Acá empieza un buen plan.</h3><p>Sumá tus favoritos del menú<br>y armá algo rico.</p></div>';
+    $('#cart-items').innerHTML=current.items.length?current.items.map(p=>`<div class="cart-row"><div><strong>${escape(p.name)}${p.category==='pizza'?' · pizza':p.category==='bebida'?' · bebida':p.category==='promotion'?' · promo':''}</strong><small>${p.cheese?(p.withCheese?'Con queso':'Sin queso'):p.category==='empanada'?'Empanada':p.category==='promotion'?escape(p.description):money(p.price)+' cada una'}</small></div>${stepper(p,p.quantity,' en tu pedido')}</div>`).join(''):'<div class="empty-cart"><div class="empty-icon" aria-hidden="true">＋</div><h3>Acá empieza un buen plan.</h3><p>Sumá tus favoritos del menú<br>y armá algo rico.</p></div>';
     $('#cart-totals').hidden=!current.items.length;
     $('#clear-cart').disabled=!current.items.length||sending;
     const line=(label,value,extra='')=>`<div class="total-line ${extra}"><span>${label}</span><span>${value}</span></div>`;
-    $('#cart-totals').innerHTML=`<div class="totals">${current.dozens?line(`${current.dozens} × ${current.mode==='combo'?'docena + Pritty 2,25 L':'docena'}`,money(current.dozens*(current.mode==='combo'?config.comboPrice:config.dozenPrice))):''}${current.extras?line(`${current.extras} empanadas ${current.dozens?'extra':'por unidad'}`,money(current.extras*config.unitPrice)):''}${current.pizzas?line('Pizzas',money(current.pizzas)):''}${current.mode==='dozen'&&current.dozens?line('Ahorrás con la docena',money(current.dozens*(12*config.unitPrice-config.dozenPrice)),'discount'):''}${line('Envío',current.shipping?money(current.shipping):'Sin costo') }<div class="total-line grand-total"><span>Total <small>ARS</small></span><strong>${money(current.total)}</strong></div></div>`;
+    $('#cart-totals').innerHTML=`<div class="totals">${current.halfDozens?line(`${current.halfDozens} × media docena + Coca-Cola 600 ml`,money(current.halfDozens*config.halfComboPrice)):''}${current.dozens?line(`${current.dozens} × ${current.mode==='combo'?'docena + Pritty 2,25 L':'docena'}`,money(current.dozens*(current.mode==='combo'?config.comboPrice:config.dozenPrice))):''}${current.extras?line(`${current.extras} empanadas ${current.halfDozens||current.dozens?'extra':'por unidad'}`,money(current.extras*config.unitPrice)):''}${current.pizzas?line('Pizzas',money(current.pizzas)):''}${current.beverages?line('Bebidas',money(current.beverages)):''}${current.promotions?line('Promociones',money(current.promotions)):''}${current.mode==='dozen'&&current.dozens?line('Ahorrás con la docena',money(current.dozens*(12*config.unitPrice-config.dozenPrice)),'discount'):''}${line('Envío',current.shipping?money(current.shipping):'Sin costo') }<div class="total-line grand-total"><span>Total <small>ARS</small></span><strong>${money(current.total)}</strong></div></div>`;
     $('#submit-order').disabled=!current.items.length||current.promoIncomplete||sending;
     $('#promo-checkout-note').hidden=!current.promoIncomplete;
-    $('#promo-checkout-note').textContent=current.promoIncomplete?`Elegiste ${promo==='combo'?'docena + Pritty':'la docena'}. Sumá ${12-current.empanadas} ${current.empanadas===11?'empanada más':'empanadas más'} para poder pedir. El precio de la promo se aplica al completar las 12.`:'';
+    $('#promo-checkout-note').textContent=current.promoIncomplete?`Elegiste ${promo==='half'?'media docena + Coca-Cola 600 ml':promo==='combo'?'docena + Pritty':'la docena'}. Sumá ${current.promoTarget-current.empanadas} ${current.promoTarget-current.empanadas===1?'empanada más':'empanadas más'} para poder pedir. El precio de la promo se aplica al completar las ${current.promoTarget}.`:'';
     $('#address-field').hidden=delivery!=='delivery';form.elements.address.required=delivery==='delivery';form.elements.address.disabled=delivery!=='delivery';
     $('#pedido').hidden=!selectedCategory&&!current.items.length;
     $('#mobile-cart').hidden=!current.items.length;$('#mobile-count').textContent=current.quantity;$('#mobile-total').textContent=money(current.total);
@@ -103,14 +106,14 @@
     $('#menu').scrollIntoView({block:'start'});
     animateReveal($('#category-view'));
   }
-  $$('[data-category]').forEach(button=>button.addEventListener('click',()=>openCategory(button.dataset.category)));
-  $('#category-back').addEventListener('click',()=>{
+  document.addEventListener('click',event=>{const button=event.target.closest('[data-category]');if(button)openCategory(button.dataset.category);});
+  $('#category-back')?.addEventListener('click',()=>{
     selectedCategory=null;$('#category-view').hidden=true;$('#category-home').hidden=false;
     render();$('#menu-title').setAttribute('tabindex','-1');$('#menu-title').focus({preventScroll:true});$('#menu').scrollIntoView({block:'start'});
     animateReveal($('#category-home'));
   });
-  $('#promo-to-empanadas').addEventListener('click',()=>openCategory('empanadas'));
-  $('.nav-order').addEventListener('click',()=>{if($('#pedido').hidden)openCategory('empanadas');});
+  $('#promo-to-empanadas')?.addEventListener('click',()=>openCategory('empanadas'));
+  $('.nav-order')?.addEventListener('click',()=>{if($('#pedido').hidden)openCategory('empanadas');});
   // No nombres, direcciones, notas, URLs de WhatsApp ni medios de pago en Analytics.
   let analyticsReady=false,consent=storage.get('punto-analytics-consent');
   const validMeasurementId=/^G-[A-Z0-9]+$/.test(config.gaMeasurementId);
@@ -131,7 +134,7 @@
   form.addEventListener('submit',event=>{
     event.preventDefault();if(sending)return;
     const current=order(),customer={name:form.elements.customer.value.trim(),address:form.elements.address.value.trim(),payment:form.elements.payment.value,notes:form.elements.notes.value.trim(),delivery};
-    const error=current.promoIncomplete?`Completá las 12 empanadas de tu promo: faltan ${12-current.empanadas}.`:!current.items.length?'Sumá algún producto para armar tu pedido.':!customer.name?'Completá tu nombre.':delivery==='delivery'&&!customer.address?'Completá tu dirección para el envío.':!customer.payment?'Elegí cómo vas a abonar.':'';
+    const error=current.promoIncomplete?`Completá las ${current.promoTarget} empanadas de tu promo: faltan ${current.promoTarget-current.empanadas}.`:!current.items.length?'Sumá algún producto para armar tu pedido.':!customer.name?'Completá tu nombre.':delivery==='delivery'&&!customer.address?'Completá tu dirección para el envío.':!customer.payment?'Elegí cómo vas a abonar.':'';
     $('#form-error').hidden=!error;$('#form-error').textContent=error;if(error)return;
     const signature=JSON.stringify({items:current.items.map(p=>[p.id,p.quantity,p.withCheese]),promo,delivery,customer,total:current.total});
     const duplicate=lastSubmission?.signature===signature;
@@ -142,7 +145,7 @@
     sending=true;render();let navigated=false;
     const go=()=>{if(navigated)return;navigated=true;try{if(popup&&!popup.closed)popup.location.replace(url);else window.location.assign(url);}catch{window.location.assign(url);}$('#send-status').textContent='Tu pedido está listo en WhatsApp. Recordá enviar el mensaje; el local confirma disponibilidad y entrega.';setTimeout(()=>{sending=false;render();},1800);};
     if(!duplicate&&analyticsReady&&consent==='yes'){
-      window.gtag('event','generate_lead',{currency:'ARS',value:current.total,order_id:id,shipping:current.shipping,empanada_quantity:current.empanadas,pizza_quantity:current.items.filter(p=>p.category==='pizza').reduce((n,p)=>n+p.quantity,0),promotion:current.mode,delivery_type:delivery,lead_source:'whatsapp',event_callback:go,event_timeout:800});
+      window.gtag('event','generate_lead',{currency:'ARS',value:current.total,order_id:id,shipping:current.shipping,empanada_quantity:current.empanadas,pizza_quantity:current.items.filter(p=>p.category==='pizza').reduce((n,p)=>n+p.quantity,0),beverage_quantity:current.items.filter(p=>p.category==='bebida').reduce((n,p)=>n+p.quantity,0),promotion_quantity:current.items.filter(p=>p.category==='promotion').reduce((n,p)=>n+p.quantity,0),promotion:current.mode,delivery_type:delivery,lead_source:'whatsapp',event_callback:go,event_timeout:800});
       setTimeout(go,1000);
     }else go();
     lastSubmission={signature,id};
